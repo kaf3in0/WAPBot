@@ -16,11 +16,6 @@ namespace WhatsAppBot
 {
     class Program
     {
-        static string targetcmd = "!target";
-        static string sendmsgtocmd = "!sendmsgto";
-        static string helpcmd = "!help";
-        
-  
         static void Main(string[] args)
         {
             Browsing browse = new Browsing();
@@ -29,8 +24,13 @@ namespace WhatsAppBot
                 string input = Console.ReadLine();
                 AdminComand(ref browse, input);
                 browse.accesTarget(input);
-                while(true)
-                    browse.GetLastMsg(input);
+                while (true)
+                {
+                    browse.ReadMsgs(input);
+                    System.Threading.Thread.Sleep(500); //KINDA needed to make sure i dont run the same comand twice
+                }
+
+                    //AdminComand(ref browse, input);
             }
             
         }
@@ -68,18 +68,18 @@ namespace WhatsAppBot
 
         static void AdminComand(ref Browsing browse, string comand)
         {
-            if (comand.Contains(targetcmd))
+            if (comand.Contains(COMAND.targetcmd))
             {
                 //Remove the comand name before looking for contacts/groups/target
-                string target = comand.Remove(comand.IndexOf(targetcmd), targetcmd.Length + 1);//+1 Because there is a space in front
+                string target = comand.Remove(comand.IndexOf(COMAND.targetcmd), COMAND.targetcmd.Length + 1);//+1 Because there is a space in front
                 Console.WriteLine(target);
                 browse.accesTarget(target);
             }
-            else if (comand.Contains(sendmsgtocmd)) // Ex: !sendmsgto ana are mere -Nimic -5
+            else if (comand.Contains(COMAND.sendmsgtocmd)) // Ex: !sendmsgto ana are mere -Nimic -5
             {
                 bool skipWhile = false;
 
-                string buffer = comand.Remove(comand.IndexOf(sendmsgtocmd), sendmsgtocmd.Length + 1);//+1 Because there is a space in front
+                string buffer = comand.Remove(comand.IndexOf(COMAND.sendmsgtocmd), COMAND.sendmsgtocmd.Length + 1);//+1 Because there is a space in front
                 Console.WriteLine();
                 int space1 = buffer.IndexOf('-');                 // Find first -
                 int space2 = buffer.IndexOf('-', space1 + 1);       // Find second -, using space1+1 as the starting position

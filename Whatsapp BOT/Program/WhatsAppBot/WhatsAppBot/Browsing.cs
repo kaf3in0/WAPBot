@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 // TODO: Clasa asta ar trebui sa se ocupe de accesari, trimitere de mesaje, INTERACTIUNI, NAVIGATIE
 namespace WhatsAppBot
 {
@@ -32,6 +31,13 @@ namespace WhatsAppBot
         public EMsgType msgType;
     }
 
+    public static class COMAND
+    {
+        public static string targetcmd = "!target";
+        public static string sendmsgtocmd = "!sendmsgto";
+        public static string helpcmd = "!help";
+    }
+
     public static class Act
     {
         public static void hover(this IWebElement webElement, IWebDriver driver)
@@ -41,12 +47,12 @@ namespace WhatsAppBot
     }
     public class Browsing
     {
-        public void Timer(int miliseconds)
+        private void Timer(int miliseconds)
         {
             System.Threading.Thread.Sleep(miliseconds);
         }
         IWebDriver driver;
-        public string getTargetName()
+        public string GetCurrentTargetName()
         {//  //*[@id = 'main']//span[contains(@title,'')]
             string targetname = driver.FindElement(By.XPath("//*[@id = 'main']//div[contains(@class,'1WBXd')]//span[@title]")).Text;
             return targetname;
@@ -59,23 +65,22 @@ namespace WhatsAppBot
         }
         public void StarMsg(IWebElement element)
         {
-            Act.hover(element, driver);
+            try
+            {
+                Act.hover(element, driver);
+            }
+            catch { Console.Write("Hover failed"); return; }    // If anything fails, most likely means that a broke the xpath, so stop wasting time
             try
             {
                 element.FindElement(By.XPath(".//div[@data-js-context-icon='true']")).Click(); // Click dropdown
-                Timer(300);
                 driver.FindElement(By.XPath(".//div[@class='_3lSL5 _2dGjP _1vu-E'][contains(text(),'Star message')]")).Click();    //Click starmsg
             }
             catch
             {
                 Console.WriteLine("Failed to star msg");
             }
-            
+
         }
-        //private void ReadMsg(IWebElement element)
-        //{
-        //}
-        // Gets you to the group chat or friend conversation specified
         public void accesTarget(string target)
         {
             IWebElement searchTarget = driver.FindElement(By.XPath("//label[@class='_2MSJr']"));
@@ -90,7 +95,7 @@ namespace WhatsAppBot
         {
             accesTarget(target);
             IWebElement chat = getChat();
-            for (int i = 0; i < count; i++){
+            for (int i = 0; i < count; i++) {
                 chat.SendKeys(msg + Keys.Enter);
                 System.Threading.Thread.Sleep(600);
             }
@@ -100,7 +105,7 @@ namespace WhatsAppBot
 
             try {
                 IWebElement soundmsg = msgextended.FindElement(By.XPath(".//input[contains(@type,'range')]"));
-                return EMsgType.SOUND;          
+                return EMsgType.SOUND;
             }
             catch { /* Just keep checking */ }
             // Verifica daca poti primi elementul specific al TIPULUI de mesaj
@@ -127,25 +132,98 @@ namespace WhatsAppBot
             return EMsgType.TEXT;
         }
 
-
-        public void GetLastMsg(string target)
+        // Target must be accesed before using this
+        public IList<IWebElement> GetMsgs()
+        {
+            return driver.FindElements(By.XPath("//*[@id='main']//div[contains(@class,'message')]"));
+        }
+        private static string ReverseString(string s)
+        {
+            char[] arr = s.ToCharArray();
+            Array.Reverse(arr);
+            return new string(arr);
+        }
+        private string formatSender(string sender)
+        {
+            string newSender = "";
+            string buffer = "";
+            int end = sender.IndexOf(": \"><div class") - 1;
+            if (end > 0)
+            {
+                while (sender[end] != ' ' || sender[end - 1] != ']')
+                {
+                    buffer += sender[end];
+                    end--;
+                }
+                newSender = ReverseString(buffer);
+            }
+            return newSender;
+        }
+        private void IsMsgComand(string msg, string s, string savtarget)
+        {
+            string sender = formatSender(s);    // The sender is the xpath, cause the .Text function does not give all the detail
+            //TODO: use a foreach to iterate through all comands instead
+            if(msg.Contains(COMAND.helpcmd))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Help Comand detected");
+                Console.WriteLine(sender);
+                Console.ResetColor();
+                sendMsgTo("Nope, just testing it with text. :(", sender);
+                accesTarget(savtarget); // Acces the target we left from
+            }
+        }
+        // Target must be accesed before using this
+        public void ReadMsgs(string target)
         {
 
-            IList<IWebElement> msg = driver.FindElements(By.XPath("//*[@id='main']//div[contains(@class,'message')]"));
-            IWebElement lastmsg = msg[msg.Count - 1];
-            try
+            IList<IWebElement> msg = GetMsgs();             
+            for (int i = msg.Count - 5; i < msg.Count; i++) // Check for the last 5 msgs
             {
-                IWebElement star = lastmsg.FindElement(By.XPath(".//span[contains(@data-icon,'star')]"));
+                string strmsg = "";
+                try { strmsg = msg[i].Text; }
+                catch { return; }
+
+                string sender = "";
+                try { sender = msg[i].GetAttribute("innerHTML"); }
+                catch { return; }
+                // Check if the message is already stared, if it is then just ignore it
+                try { IWebElement star = msg[i].FindElement(By.XPath(".//span[contains(@data-icon,'star')]")); }
+                catch   // if the mesage is not stared already, star it
+                {
+                    try { StarMsg(msg[i]); }
+                    catch { return; } // If this hapens it means that the xpath was broken by a newly sent message, so just stop and try again with a refreshed xpath
+                    IsMsgComand(strmsg, sender, target);
+                }              
             }
-            catch
-            {
-                try { Console.WriteLine(lastmsg.Text); }
-                catch { }
-                StarMsg(lastmsg);
-            }
-            
-            
+
             
         }
     }
 }
+
+
+
+
+
+
+
+
+/*
+ * public static void Main()
+{
+    System.Timers.Timer aTimer = new System.Timers.Timer();
+    aTimer.Elapsed+=new ElapsedEventHandler(OnTimedEvent);
+    aTimer.Interval=5000;
+    aTimer.Enabled=true;
+
+    Console.WriteLine("Press \'q\' to quit the sample.");
+    while(Console.Read()!='q');
+}
+
+ // Specify what you want to happen when the Elapsed event is raised.
+ private static void OnTimedEvent(object source, ElapsedEventArgs e)
+ {
+     Console.WriteLine("Hello World!");
+ }
+ */
