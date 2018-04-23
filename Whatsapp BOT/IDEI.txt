@@ -1,0 +1,11 @@
+!givestatusto: aloca statusul "status" persoanei "x"; statusurile nu pot fi ENUMS pt ca sunt aproape unice
+
+Timerele vor fi din 24 in 24 de ore, mereu la o anumita ora la intervale de sapt;
+Sistemul de Rewards:
+
+
+LEGENDAR	LEGENDAR
+IN CINSTEA SECTEI	PARINTII MEI, TOVARASII MEI
+Da cate un shot de vodka pentru fiecare membru al sectei in interval de 2	Da niste shoturi de vodka cu parintii
+	
+1500	1500 EXP
