@@ -1,0 +1,8 @@
+C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Release\WhatsAppBot.exe.config
+C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Release\WhatsAppBot.exe
+C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Release\WhatsAppBot.pdb
+C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Release\WebDriver.dll
+C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Release\WebDriver.xml
+C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\obj\Release\WhatsAppBot.csproj.CoreCompileInputs.cache
+C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\obj\Release\WhatsAppBot.exe
+C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\obj\Release\WhatsAppBot.pdb
