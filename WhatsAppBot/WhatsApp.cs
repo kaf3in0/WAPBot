@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Remote;
 
 
-// DESIGN CHOICE: Instructions should return true if they succeded or false otherwise
-// DESIGN CHOICE: Getters should retrun null if they fail
-// TODO: Clasa asta ar trebui sa se ocupe de accesari, trimitere de mesaje, INTERACTIUNI, NAVIGATIE
 namespace WhatsApp {
     namespace WebElements {
 
@@ -68,7 +65,7 @@ namespace WhatsApp {
                     return null;
                 }
             }
-             public IWebElement getChat() {
+             public IWebElement GetChatBar() {
                 try {
                     IWebElement chat = driver.FindElement(By.XPath("//div[@class='_2S1VP copyable-text selectable-text']"));
                     return chat;
@@ -91,7 +88,7 @@ namespace WhatsApp {
             public bool SendMsgTo(string msg, string target, int count = 1) {
                 AccesTarget(target);
                 try {
-                    IWebElement chat = getChat();
+                    IWebElement chat = GetChatBar();
                     for (int index = 0; index < count; index++) {
                         // Format text so it can allow new lines in whatsapp
                         if (msg.Contains("\n")) {
@@ -160,14 +157,18 @@ namespace WhatsApp {
                     Console.WriteLine("Failed to star msg");
                 }
             }
-
+            public Point GetElementPosition(IWebElement element) {
+                Point position = element.Location;
+                Console.WriteLine("X: {0}, Y: {1}",position.X, position.Y);
+                return position;
+            }
             public string GetMsgText(IWebElement msg) {
                 try {
                     string m = msg.FindElement(By.XPath(".//span[contains(@class,'selectable-text')]")).Text;
                     return m;
                 } catch { return null; }
             }
-            
+
             public string GetMsgSender(IWebElement msg) {
                 try {
                     string buffer = msg.GetAttribute("innerHTML");

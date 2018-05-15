@@ -26,7 +26,7 @@ namespace BOT {
                 foreach(var key in keyList) {
                     msgBuilder += key + "\n";
                 }
-                wap.SendMsgTo(msgBuilder, "Nimic");
+                wap.SendMsgTo(msgBuilder, user);
             }
 
             public static void IfComandExecute(string input, string user, Wap wap) {

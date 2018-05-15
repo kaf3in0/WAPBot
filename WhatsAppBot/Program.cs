@@ -10,12 +10,9 @@ using System.Timers;
 
 namespace BOT {
     class Program {
-        static QuestDataBase q = new QuestDataBase();
+       
         static Wap wap = new Wap();
-        static void printQuest(Quest q) {
-                Console.WriteLine("ID: {0}\nENABLED: {1}\nCLASA: {2}\nRARITATE: {3}\nTITLU: {4}\nTEXT: {5}\nTIMER: {6}\nXP: {7}\nPUNCTE: {8}\nSTATUS: {9}",
-                    q.id, q.enabled, q.clasa, q.raritate, q.titlu, q.text, q.timpOre, q.xp, q.puncte, q.status);
-        }
+        
         private static void CheckConsoleComands() {
 
             while (true) {
@@ -36,35 +33,35 @@ namespace BOT {
             
         }
 
-
-        private static void ReadMsgs() {
-            // Get the msgs from whatsapp
+        public static void ReadMsgsUsingDataBase() {
             IList<IWebElement> messages =  wap.GetMsgs();
-            // Check if the msg is a comand or not
-            foreach(var msg in messages) {
-                // I dont have to check if i've read the msgs if i only read it once when I get a new msg
-                string msgText = wap.GetMsgText(msg);
-                if (msgText == null) { // If the msg list BROKE just do this function again
-                    ReadMsgs();
+            string group = wap.GetCurrentTargetName();
+            // If the group exists in the data base check the last msg
+            LastMsg lastConversationMsg = WhatsAppDataBase.GetLastMsgFromConversation(group);
+            // If the group/user doesn't exist in the database, create it
+            if(lastConversationMsg == null) {
+                // Create it
+                WhatsAppDataBase.CreateNewGroup(group, wap.GetMsgText(messages[messages.Count - 1]));
+            } else {
+                for (int i = messages.Count -1; i >= 0; i--) {
+                    string msgText = wap.GetMsgText(messages[i]);
+                    string msgUser = wap.GetMsgSender(messages[i]);
+                    // If the last msg from the group is identical we stop reading the chat
+                    if (msgText == lastConversationMsg.text) {
+                        string lastMsgTextPula = wap.GetMsgText(messages[messages.Count - 1]);
+                        WhatsAppDataBase.UpdateLastMsgInGroup(group, lastMsgTextPula);
+                        return;
+                    } else {
+                        string lastMsgTextPizda = wap.GetMsgText(messages[messages.Count - 1]);
+                        WhatsAppDataBase.UpdateLastMsgInGroup(group, lastMsgTextPizda);
+                        UserComand.IfComandExecute(msgText, group, wap);
+                    }
                 }
-                string msgSender = wap.GetMsgSender(msg);
-                if(msgSender == null) {
-                    ReadMsgs();// If the msg list BROKE just do this function again
-                }
-                // Instead check if the msg is the last one that we read... from the database
-                try { IWebElement star = msg.FindElement(By.XPath(".//span[contains(@data-icon,'star')]")); }
-                catch {
-                    wap.StarMsg(msg);
-                    System.Threading.Thread.Sleep(2000);
-                    Console.WriteLine("{0}: {1}", msgSender, msgText);
-                    UserComand.IfComandExecute(msgText, msgSender, wap);
-                    AdminComand.IfComandExecute(msgText, msgSender, wap);
-                }
-
-                
+                string lastMsgText = wap.GetMsgText(messages[messages.Count - 1]);
+                WhatsAppDataBase.UpdateLastMsgInGroup(group, lastMsgText);
             }
-            // If it is a comand execute it acordingly; Comands class should do the rest
-            
+
+           
         }
         private static void InitQuestTimer() {
             System.Timers.Timer t = new System.Timers.Timer(TimeSpan.FromSeconds(10).TotalMilliseconds); // set the time (5 min in this case)
@@ -77,7 +74,6 @@ namespace BOT {
             Thread consoleComands = new Thread(CheckConsoleComands);
             consoleComands.Start();
         }
-
         private static void InitProgram() {
             InitQuestTimer();
             InitComandsFromConsoleThreads();
@@ -89,14 +85,14 @@ namespace BOT {
             while (true) {
                 // Check if there is any new msg
                 if(ClickOnNewMessages()) {
+                    
                     // If there is a new msg, click on the chat and read the msg
-                    ReadMsgs();
+                    ReadMsgsUsingDataBase();
                     // Make sure you get to read all the msgs in that group after clicking on it
-                    if(wap.GetCurrentTargetName() != "Nimic") {
-                        wap.AccesTarget("Nimic"); //After you read the msgs return to the dummy group
+                    if(wap.GetCurrentTargetName() != "Nimic 2") {
+                        wap.AccesTarget("Nimic 2"); //After you read the msgs return to the dummy group
                     }
                 }
-                
                 System.Threading.Thread.Sleep(5000);
                 // If there are no new mesages do nothing
                 //Console.WriteLine("No new mesages");

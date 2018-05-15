@@ -22,5 +22,3 @@ C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\b
 C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Debug\Google.Apis.Sheets.v4.xml
 C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Debug\Newtonsoft.Json.xml
 C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Debug\client_secret.json
-C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Debug\DataBaseBot.mdf
-C:\Users\Edward\Documents\Desktop\Whatsapp BOT\Program\WhatsAppBot\WhatsAppBot\bin\Debug\DataBaseBot_log.ldf
